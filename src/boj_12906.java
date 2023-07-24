@@ -51,7 +51,7 @@ public class boj_12906 {
         bfs.add(hanoi);
         
         while(bfs.size() > 0){
-            boolean isFlag = false;
+            boolean isTrue = false;
             int qSize = bfs.size();
             
             for(int i=0; i<qSize; i++){
@@ -93,12 +93,12 @@ public class boj_12906 {
                     if(chkFnsh(hanoi_tower_1, (j+1)%3)){
                         bfs.clear();
                         bfs.add(hanoi_tower_1_tmp);
-                        isFlag = true;
+                        isTrue = true;
                         break;
                     }else if(chkFnsh(hanoi_tower_2, (j+2)%3)){
                         bfs.clear();
                         bfs.add(hanoi_tower_2_tmp);
-                        isFlag = true;
+                        isTrue = true;
                         break;
                     }else{
                         bfs.add(hanoi_tower_1_tmp);
@@ -106,7 +106,7 @@ public class boj_12906 {
                     }
                 }
                 
-                if(isFlag)
+                if(isTrue)
                     break;
             }
             
