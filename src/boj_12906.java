@@ -1,121 +1,102 @@
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class boj_12906 {
     
-    public static boolean chkFnsh(String[] hanoi, int i){
-        boolean rslt = true;
-        String[] answer = {"A", "B", "C"};
+    static class Node {
+        public Stack<Character>[] towers;
         
-        if(hanoi[i].contains(answer[(i+1)%3]) || hanoi[i].contains(answer[(i+2)%3])){
-            rslt = false;
+        Node() {
+            this.towers = new Stack[3];
+            
+            for(int i=0; i<3; i++) 
+                towers[i] = new Stack<>();
         }
         
-        return rslt;
+        public String getStatusCode() {
+            String statusCode = "";
+
+            for(Character c : towers[0]) statusCode += c;
+            statusCode += '/';
+            for(Character c : towers[1]) statusCode += c;
+            statusCode += '/';
+            for(Character c : towers[2]) statusCode += c;
+
+            return statusCode;
+        }
     }
     
-    public static boolean chkEnd(String[] hanoi){
-        boolean rslt = true;
-        String[] answer = {"A", "B", "C"};
-        
+    public static Node copyNode(Node origin){
+        Node newNode = new Node();
+
         for(int i=0; i<3; i++){
-            if(hanoi[i].contains(answer[(i+1)%3]) || hanoi[i].contains(answer[(i+2)%3])){
-                rslt = false;
-                break;
-            }
+            for(Character c : origin.towers[i]) newNode.towers[i].push(c);
         }
-        
-        return rslt;
+
+        return newNode;
     }
-    
-    public static void main(String[] agrs){
+
+    public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
-        
-        int ans = 0;
-        boolean isEnd = false;
-        Queue<String> bfs = new LinkedList<>();
-        String hanoi = "";
-        
+
+        int rslt = 0;
+        Queue<Node> bfs = new LinkedList<>();
+        HashSet<String> visited = new HashSet<>();
+
+        Node endNode = new Node();
+        Node node = new Node();
         for(int i=0; i<3; i++){
             String inpt = sc.nextLine();
             String tower = "";
-            
-            if(Integer.parseInt(inpt.substring(0, 1)) > 0){
-                tower = inpt.substring(2);
-            }
-            hanoi += tower + "/";
-        }
-        
-        hanoi = hanoi.substring(0, hanoi.length()-1);
-        bfs.add(hanoi);
-        
-        while(bfs.size() > 0){
-            boolean isTrue = false;
-            int qSize = bfs.size();
-            
-            for(int i=0; i<qSize; i++){
-                String[] hanoi_tower = {"", "", ""};
-                String hanoi_tmp = bfs.poll();
-                String[] hanoi_tower_tmp = hanoi_tmp.split("/");
-                
-                for(int j=0; j<hanoi_tower_tmp.length; j++){
-                    hanoi_tower[j] = hanoi_tower_tmp[j];
-                }
-                
-                if(chkEnd(hanoi_tower)){
-                    isEnd = true;
-                    break;
-                }
-                
-                for(int j=0; j<3; j++){
-                    if(hanoi_tower[j].length() == 0 || chkFnsh(hanoi_tower, j))
-                        continue;
-                    
-                    String top = hanoi_tower[j].substring(hanoi_tower[j].length() - 1);
-                    
-                    String[] hanoi_tower_1 = new String[3];
-                    String[] hanoi_tower_2 = new String[3];
-                    
-                    for(int k=0; k<3; k++){
-                        hanoi_tower_1[k] = hanoi_tower[k];
-                        hanoi_tower_2[k] = hanoi_tower[k];
-                    }
-                    
-                    hanoi_tower_1[j] = hanoi_tower_1[j].substring(0, hanoi_tower_1[j].length() - 1);
-                    hanoi_tower_1[(j+1)%3] = hanoi_tower_1[(j+1)%3] + top;
-                    hanoi_tower_2[j] = hanoi_tower_2[j].substring(0, hanoi_tower_2[j].length() - 1);
-                    hanoi_tower_2[(j+2)%3] = hanoi_tower_2[(j+2)%3] + top;
-                
-                    String hanoi_tower_1_tmp = String.join("/", hanoi_tower_1);
-                    String hanoi_tower_2_tmp = String.join("/", hanoi_tower_2);
 
-                    if(chkFnsh(hanoi_tower_1, (j+1)%3)){
-                        bfs.clear();
-                        bfs.add(hanoi_tower_1_tmp);
-                        isTrue = true;
-                        break;
-                    }else if(chkFnsh(hanoi_tower_2, (j+2)%3)){
-                        bfs.clear();
-                        bfs.add(hanoi_tower_2_tmp);
-                        isTrue = true;
-                        break;
-                    }else{
-                        bfs.add(hanoi_tower_1_tmp);
-                        bfs.add(hanoi_tower_2_tmp);
+            if(!"0".equals(inpt.substring(0,1)))
+                tower = inpt.split(" ")[1];
+
+            for(int j=0; j<tower.length(); j++){
+                node.towers[i].add(tower.charAt(j));
+
+                if(tower.charAt(j) == 'A') endNode.towers[0].add(tower.charAt(j));
+                else if(tower.charAt(j) == 'B') endNode.towers[1].add(tower.charAt(j));
+                else if(tower.charAt(j) == 'C') endNode.towers[2].add(tower.charAt(j));
+            }
+        }
+
+        String endStatus = endNode.getStatusCode();
+
+        bfs.offer(node);
+        visited.add(node.getStatusCode());
+
+        while(bfs.size() > 0){
+            int qSize = bfs.size();
+
+            for(int i=0; i<qSize; i++){
+                Node now = bfs.poll();
+
+                if(now.getStatusCode().equals(endStatus)){
+                    System.out.println(rslt);
+                    return;
+                }
+
+                for(int from=0; from < 3; from++){
+                    for(int j=1; j < 3; j++){
+                        if(!now.towers[from].isEmpty()){
+                            Node next = copyNode(now);
+                            int to = (from + j) % 3;
+                            next.towers[to].push(next.towers[from].pop());
+
+                            String nextStatus = next.getStatusCode();
+                            if(!visited.contains(nextStatus)){
+                                visited.add(nextStatus);
+                                bfs.offer(next);
+                            }
+                        }
                     }
                 }
-                
-                if(isTrue)
-                    break;
             }
-            
-            if(isEnd)
-                break;
-            
-            ans++;
+            rslt++;
         }
-        
-        System.out.println(ans);
     }
 }
