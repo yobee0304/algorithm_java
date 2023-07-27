@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "boj_2225",
+            "request": "launch",
+            "mainClass": "boj_2225",
+            "projectName": "algorithm_java_53d9b56e"
+        },
+        {
+            "type": "java",
             "name": "boj_15500",
             "request": "launch",
             "mainClass": "boj_15500",
