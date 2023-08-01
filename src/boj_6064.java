@@ -32,6 +32,8 @@ public class boj_6064 {
             int nextY = x;
             
             while(true){
+                nextY = nextY % N == 0 ? N : nextY % N;
+
                 if(nextX > lcm){
                     rslt[i] = -1;
                     break;
@@ -43,8 +45,7 @@ public class boj_6064 {
                 }
                 
                 nextX += M;
-                nextY = (nextY + M) % N;
-                nextY = nextY == 0 ? N : nextY;
+                nextY += M;
             }
         }
         
