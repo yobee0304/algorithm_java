@@ -7,7 +7,7 @@ public class boj_15649 {
     public static StringBuffer sb = new StringBuffer();
     
     public static void dfs(String path, int now){
-        if (now == N){
+        if (now == M){
             sb.append(path.substring(0, path.length() - 1) + "\n");
             return;
         }
