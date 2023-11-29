@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "sol191",
+            "request": "launch",
+            "mainClass": "leetcode.sol191",
+            "projectName": "algorithm_java_9c953b4b"
+        },
+        {
+            "type": "java",
             "name": "sol343",
             "request": "launch",
             "mainClass": "leetcode.sol343",
